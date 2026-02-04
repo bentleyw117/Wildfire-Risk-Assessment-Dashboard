@@ -1,0 +1,58 @@
+[project]
+name = "wildfire-risk-dashboard"
+version = "0.1.0"
+description = "A dynamic Python dashboard that assesses real-time wildfire risk by integrating weather APIs and satellite vegetation data."
+readme = "README.md"
+authors = [
+  {name = "Bentley Williams", email = "theofficialbentley117@gmail.com"}
+]
+maintainers = [
+  {name = "Bentley Williams", email = "theofficialbentley117@gmail.com"}
+]
+classifiers = [
+    # TODO
+]
+license = {text = "MIT"}
+dependencies = [
+  "typer",
+  "rich",
+]
+requires-python = ">= 3.10"
+
+[project.optional-dependencies]
+test = [
+    "coverage",  # testing
+    "pytest",  # testing
+    "ruff",  # linting
+    "ty", # checking types
+    "ipdb", # debugging
+]
+
+[project.urls]
+bugs = "https://github.com/bentleyw117/wildfire_risk_dashboard/issues"
+changelog = "https://github.com/bentleyw117/wildfire_risk_dashboard/blob/main/changelog.md"
+homepage = "https://github.com/bentleyw117/wildfire_risk_dashboard"
+
+[project.scripts]
+wildfire_risk_dashboard = "wildfire_risk_dashboard.cli:app"
+
+[tool.ty]
+# All rules are enabled as "error" by default; no need to specify unless overriding.
+# Example override: relax a rule for the entire project (uncomment if needed).
+# rules.TY015 = "warn"  # For invalid-argument-type, warn instead of error.
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # Pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+]
+
+[tool.uv]
+package = true
