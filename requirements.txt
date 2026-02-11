@@ -4,3 +4,5 @@ streamlit
 geopandas
 pytest
 os
+math
+geopy
