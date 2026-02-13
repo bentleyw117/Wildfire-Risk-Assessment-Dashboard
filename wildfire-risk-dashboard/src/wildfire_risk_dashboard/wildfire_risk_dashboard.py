@@ -28,23 +28,6 @@ def get_one_degree_of_lon(lat):
 
 # --- Weather Data Processing ---
 
-
-def calculate_risk_score(weatherScore, fuelScore, slopeScore):
-    """
-    Calculates a fire risk score from 0-100.
-    Expects input scores to be normalized (0-100).
-    Returns a number between 0-100.
-    """
-
-    weatherWeight = 0.40
-    fuelWeight = 0.40
-    slopeWeight = 0.20
-    
-    total_score = (weatherWeight * weatherScore) + (fuelWeight * fuelScore) + (slopeWeight * slopeScore)
-                  
-    return round(total_score, 2)
-
-
 def normalize_temperature(weatherData):
     """
     Returns a score between 0-100 based on temperature found in the weather data.
@@ -113,10 +96,32 @@ def calculate_weather_score(tempScore, humidityScore, windScore):
 
 #################################################################################
 
-# --- Fuel Data Processing ---
+# --- Fuel/NDVI Data Processing ---
 
-def calculate_fuel_score(fuelData):
-    pass
+def normalize_fuel(ndvi):
+    """
+    Returns a score between 0-100 based on NDVI.
+    
+    :param ndvi: NDVI score (-1 to 1)
+    """
+    
+    # Water/Snow Guard (No fuel)
+    if ndvi < 0:
+        return 0
+    
+    # Barren to Dry Grass (0.0 to 0.2)
+    # Risk INCREASES as more dry fuel (NDVI 0.2) is present compared to rock (0.0)
+    elif ndvi <= 0.2:
+        # Scale 0.0 (10 risk) to 0.2 (100 risk)
+        return 10 + (ndvi / 0.2) * 90
+        
+    # Dry Grass to Lush Green (0.2 to 0.8+)
+    # Risk DECREASES as the vegetation becomes more moisture-rich
+    else:
+        # Scale 0.2 (100 risk) to 0.8 (10 risk)
+        # Using the Interpolation Formula: y = y1 + (x - x1) * (y2 - y1) / (x2 - x1)
+        score = 100 + (ndvi - 0.2) * (10 - 100) / (0.8 - 0.2)
+        return max(10, score) # Clamp it so lush forests don't hit 0
 
 
 #################################################################################
@@ -222,3 +227,24 @@ def normalize_slope(slope):
         return 100
     else:
         return (slope / 30) * 100
+
+#################################################################################
+
+# --- Final Calculations ---
+
+def calculate_risk_score(weatherScore, fuelScore, slopeScore):
+    """
+    Returns a risk score between 0-100.
+    
+    :param weatherScore: Normalized weather score (0-100)
+    :param fuelScore: Normalized fuel score (0-100)
+    :param slopeScore: Normalized slope score (0-100)
+    """
+
+    weatherWeight = 0.40
+    fuelWeight = 0.40
+    slopeWeight = 0.20
+    
+    total_score = (weatherWeight * weatherScore) + (fuelWeight * fuelScore) + (slopeWeight * slopeScore)
+                  
+    return round(total_score, 2)

@@ -127,3 +127,18 @@ def test_flat_ground_slope():
     
     assert wrd.get_steepness(mock_elevations, coords) == 0.0
     assert wrd.normalize_slope(0.0) == 0.0
+
+#############################################################
+
+# --- Risk Score Testing ---
+
+def test_calculate_risk_score_extremes():
+    # Test 1: Maximum Danger (Red Flag Warning)
+    assert wrd.calculate_risk_score(100, 100, 100) == 100.0
+    
+    # Test 2: Minimum Danger (Snowy/Wet)
+    assert wrd.calculate_risk_score(0, 0, 0) == 0.0
+    
+    # Test 3: Realistic "High Risk" (High wind, dry grass, flat land)
+    # (90 * 0.4) + (80 * 0.4) + (10 * 0.2) = 36 + 32 + 2 = 70
+    assert wrd.calculate_risk_score(90, 80, 10) == 70.0

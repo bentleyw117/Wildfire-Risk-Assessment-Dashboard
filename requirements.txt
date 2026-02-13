@@ -6,3 +6,5 @@ pytest
 os
 math
 geopy
+ee
+datetime
