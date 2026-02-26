@@ -51,11 +51,6 @@ This project followed a rigorous software development lifecycle (SDLC) to move f
 
 ---
 
-## 💡 Cloud FinOps & Optimization
-In alignment with **Cloud FinOps** principles, this architecture is optimized for cost-efficiency. By utilizing the lower-cost OpenWeather API as the primary entry point and only escalating to the Google Maps Geocoding API for verified quality gaps, the project minimizes operational overhead while maintaining data integrity.
-
----
-
 ## ⚙️ Setup
 
 1. **Clone & Install:**
