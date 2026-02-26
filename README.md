@@ -39,8 +39,8 @@ This project followed a rigorous software development lifecycle (SDLC) to move f
 | :--- | :--- |
 | **Frontend** | Streamlit |
 | **Visualization** | Plotly (Gauges), Folium (Satellite Maps) |
-| **APIs** | OpenWeatherMap, Google Maps, Google Earth Engine |
-| **Data Processing** | NumPy, Pandas, Pycountry, Googlemaps SDK |
+| **APIs** | OpenWeatherMap, Open-Meteo, Google Maps, Google Earth Engine |
+| **Data Processing** | Geopy, Pycountry, Googlemaps SDK |
 
 ---
 

@@ -1,7 +1,6 @@
 requests
 python-dotenv
 streamlit
-geopandas
 pytest
 os
 math
