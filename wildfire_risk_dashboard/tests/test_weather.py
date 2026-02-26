@@ -6,14 +6,38 @@ from src.wildfire_risk_dashboard import wildfire_risk_dashboard as wrd
 
 # --- API Testing ---
 
-def test_get_geo_coordinates():
-    """Verify that we can get coordinates for Sioux Falls."""
-    geo = utils.get_geo_coordinates("57106", "US")
+def test_get_geo_coordinates_brazil():
+    """Verify Brazil coordinates and ensure we get the specific city name."""
+    geo = utils.get_geo_coordinates("69450-000", "BR")
 
-    # Assertions check the data
-    assert geo["name"] == "Sioux Falls"
-    assert "lat" in geo
-    assert "lon" in geo
+    assert geo is not None, "API returned None for Brazil Zip"
+    
+    # Debug print - this shows up if the test fails
+    print(f"DEBUG: Received Name: {geo['name']} from Source: {geo.get('source', 'owm')}")
+    
+    # Google's formatted address for 69450 contains "Codajás"
+    assert "Codajás" in geo["name"]
+
+
+def test_get_geo_london():
+    """Verify London coordinates even if name is just the zip."""
+    geo = utils.get_geo_coordinates("E14 5AB", "GB")
+    
+    assert geo is not None
+    # If OWM returns it, it might just be the zip. 
+    # If Google returns it, it will be "London E14 5AB, UK"
+    assert "London" in geo["name"] or geo["lat"] > 51.0
+
+
+def test_get_geo_sydney():
+    geo = utils.get_geo_coordinates("2000", "AU")
+    assert "Sydney" in geo["name"]
+
+
+def test_get_geo_invalid():
+    # This should return None based on your waterfall logic
+    geo = utils.get_geo_coordinates("00000", "ZZ")
+    assert geo is None
 
 
 def test_get_weather_data():
@@ -25,6 +49,21 @@ def test_get_weather_data():
     assert "main" in weather
     assert "temp" in weather["main"]
     assert "humidity" in weather["main"]
+
+
+def test_get_elevation_data():
+    """Verify that the elevation API returns valid data."""
+    # 1. Setup Mock Data
+    lat, lon = 43.5447, -96.7311
+    degree_offset = 30 # 30 meters
+    coordsA = {"north": ("43.54", "-96.73"), "east": ("43.54", "-96.73"), "south": ("43.54", "-96.73"), "west": ("43.54", "-96.73")}
+    # Generate coordinates using your function
+    coords = wrd.get_neighboring_coords(lat, lon, degree_offset)
+
+    elevationData = utils.get_elevation_data(coords)
+
+    assert "elevation" in elevationData
+    assert len(elevationData["elevation"]) == 4
 
 
 #############################################################

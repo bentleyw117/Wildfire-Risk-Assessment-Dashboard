@@ -6,7 +6,6 @@ To calculate a score between 0 and 100, the algorithm will use the following wei
 """
 
 # Imports
-from .utils import get_geo_coordinates, get_weather_data
 import math
 from geopy import distance
 
@@ -179,7 +178,7 @@ def get_neighboring_coords(lat, lon, degree):
     return neighboringCoords
 
 
-def get_elevations(elevationData):
+def grab_elevations(elevationData):
     """
     Returns a dictionary of elevations of the current and neighboring coordinates.
     
@@ -187,11 +186,10 @@ def get_elevations(elevationData):
     """
 
     elevations = {
-        "current": elevationData["results"][0]["elevation"],
-        "north": elevationData["results"][1]["elevation"],
-        "east": elevationData["results"][2]["elevation"],
-        "south": elevationData["results"][3]["elevation"],
-        "west": elevationData["results"][4]["elevation"]
+        "north": elevationData["elevation"][0],
+        "east": elevationData["elevation"][1],
+        "south": elevationData["elevation"][2],
+        "west": elevationData["elevation"][3]
     }
     return elevations
 

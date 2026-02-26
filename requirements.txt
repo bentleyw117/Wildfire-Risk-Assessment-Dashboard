@@ -8,3 +8,8 @@ math
 geopy
 ee
 datetime
+pycountry
+plotly
+folium
+streamlit-folium
+googlemaps
