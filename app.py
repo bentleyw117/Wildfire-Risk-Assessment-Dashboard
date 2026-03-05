@@ -78,14 +78,28 @@ st.title("🔥 Wildfire Risk Assessment")
 # --- Sidebar Inputs ---
 with st.sidebar:
     st.header("📍 Location Inputs")
-    try:
-        zipCode = st.text_input("Zip Code", placeholder="eg. 57104")
-        countryCode = st.text_input("Country Code", value="US", help="Use ISO Alpha-2 (e.g., US, CA, GB)")
-        int(zipCode) # Guard against non-numeric
-        if not pc.countries.get(alpha_2=countryCode): # Guard against non-countrycode
-            raise ValueError
-    except ValueError:
-        st.warning(f"⚠️ Invalid zip code or country code")
+
+    # Toggle for advanced mode
+    advancedMode = st.toggle("Advanced Coordinate Mode", help="Input exact Lat/Lon for 30m precision")
+
+    if advancedMode:
+        # Latitude and Longitude Inputs
+        latInput = st.number_input("Latitude", format="%.6f", placeholder="Latitude")
+        lonInput = st.number_input("Longitude", format="%.6f", placeholder="Longitude")
+        # We still need a label for the results/map
+        locationName = f"Coords: {latInput}, {lonInput}"
+        zipCode = None
+        countryCode = None
+    else:
+        # Zip Code and Country Code Inputs
+        try:
+            zipCode = st.text_input("Zip Code", placeholder="eg. 57104")
+            countryCode = st.text_input("Country Code", value="US", help="Use ISO Alpha-2 (e.g., US, CA, GB)")
+            int(zipCode) # Guard against non-numeric
+            if not pc.countries.get(alpha_2=countryCode): # Guard against non-countrycode
+                raise ValueError
+        except ValueError:
+            st.warning(f"⚠️ Invalid zip code or country code")
 
     radius = st.slider("Assessment Radius (meters)", 10, 500, 30)
 
@@ -97,14 +111,19 @@ if "risk_results" not in st.session_state:
 
 # --- Main App Logic ---
 if calculateButton:
-    if not zipCode or not countryCode:
+    if not advancedMode and (not zipCode or not countryCode):
         st.error("Please provide both a Zip Code and Country Code.")
     else:
         try:
             with st.spinner("Analyzing environment..."):
-                # Get Geo-Coordinates
-                geoData = utils.get_geo_coordinates(zipCode, countryCode)
-                latitude, longitude = utils.grab_coordinates(geoData)
+                if advancedMode:
+                    # Use Direct Inputs
+                    latitude, longitude = latInput, lonInput
+                    name = locationName
+                else:
+                    # Get Geo-Coordinates
+                    geoData = utils.get_geo_coordinates(zipCode, countryCode)
+                    latitude, longitude = utils.grab_coordinates(geoData)
 
                 # Weather Processing
                 weatherData = utils.get_weather_data(latitude, longitude)
