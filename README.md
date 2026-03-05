@@ -1,35 +1,39 @@
 # 🔥 Wildfire Risk Assessment Dashboard
 
-An interactive Geospatial Dashboard that calculates localized wildfire risk scores by synthesizing real-time weather data, satellite-derived fuel density (NDVI), and topographical slope analysis.
+An interactive Geospatial Data Engineering project that calculates localized wildfire risk scores by synthesizing real-time weather data, satellite-derived fuel density (NDVI), and topographical slope analysis.
 
+This dashboard provides a high-precision look at environmental hazards, processing data within a specific 30m to 500m radius to help identify risk at the property or neighborhood level.
 
+---
 
 ## 🚀 Key Engineering Features
 
 ### 🛠️ Resilient Geocoding Engine (Waterfall Logic)
-To ensure global reliability, this project implements a multi-tier geocoding strategy to handle variations in international postal code databases:
-* **Primary:** OpenWeatherMap Geocoding API for rapid, lightweight lookups.
-* **Quality Guard:** Custom logic to detect "lazy" or generic API responses (e.g., returning only a country name when a city-level result is required).
-* **Failover:** High-precision fallback to the **Google Maps Geocoding API**, utilizing query refinement (e.g., appending suffixes like `-000` for Brazil) to force city-level granularity.
+To ensure global reliability, I implemented a multi-tier geocoding strategy to handle variations in international postal code databases:
+* **Primary API:** Utilizes OpenWeatherMap Geocoding for rapid, lightweight lookups.
+* **Quality Guard:** Custom logic detects "generic" API responses (e.g., when an API returns only a country name instead of a specific city).
+* **Failover System:** High-precision fallback to the **Google Maps Geocoding API**, utilizing query refinement to force city-level granularity for complex international formats.
 
 ### 🛰️ Satellite Data Orchestration
-* **Google Earth Engine (GEE):** Programmatic integration with Landsat satellite imagery to calculate the **Normalized Difference Vegetation Index (NDVI)** within a user-defined radius.
-* **Dynamic Radius Scaling:** Supports assessment areas from 30m to 100m, intentionally aligned with the native 30m spatial resolution of Landsat sensors.
+* **Google Earth Engine (GEE):** Programmatic integration with Landsat satellite imagery to calculate the **Normalized Difference Vegetation Index (NDVI)**.
+* **Scientific Alignment:** The dashboard supports dynamic radius scaling (30m–100m) specifically aligned with the native 30m spatial resolution of Landsat sensors.
 
 ### ⛰️ Topographical Risk Analysis
-* **Terrain Processing:** Implements Horn’s Method to calculate surface steepness from digital elevation models (DEM).
-* **Slope Normalization:** Converts raw degrees into a 0-100 risk score based on how slope accelerates wildfire propagation.
+* **Horn’s Method:** Implements advanced terrain processing to calculate surface steepness from digital elevation models (DEM).
+* **Slope Normalization:** Raw degrees are converted into a 0-100 risk score, accounting for how steep terrain accelerates wildfire propagation.
 
 ---
 
-## 🏗️ Development History & Engineering Process
+## 🏗️ Challenges Overcome & Optimization
 
-This project followed a rigorous software development lifecycle (SDLC) to move from a CLI script to a production-ready dashboard:
+### 🌐 Solving the "Zip Code Collision"
+During development, I identified a significant data integrity issue where numeric zip codes overlapped across different countries (e.g., zip `69450` existing in both Brazil and France). 
+* **The Fix:** Developed a `pytest` suite to enforce "Country Guard" validation. If the primary API returns a result from the wrong country, the system automatically triggers the Google Maps failover.
+* **Format Precision:** Identified that Brazilian 5-digit codes often returned generic results; implemented a "self-healing" logic that appends the `-000` CEP suffix to force city-level accuracy.
 
-1. **Feature Branching:** Utilized a `feature/streamlit-frontend` Git branch to isolate UI development from core algorithmic logic, ensuring the "known good" backend remained stable during frontend iteration.
-2. **State Management:** Implemented `st.session_state` to persist heavy API computations (Weather/GEE) across Streamlit's rerun cycles, preventing redundant API calls and flickering UI.
-3. **Automated Unit Testing:** Developed a `pytest` suite to validate geocoding accuracy across international borders, specifically solving "Zip Code Collisions" where the same postal code exists in multiple countries (e.g., Brazil vs. France).
-4. **Waterfall Refinement:** Iteratively improved geocoding logic to handle international edge cases, such as enforcing 8-digit precision for Brazilian CEPs to ensure city-level assessment.
+### ⚡ Performance & State Management
+* **Redundant Call Prevention:** Used Streamlit `session_state` to persist heavy API computations (Weather and Earth Engine data). This prevents the app from re-running expensive calculations every time a user adjusts a UI toggle.
+* **API Optimization:** Engineered the backend to prioritize lower-latency data sources first, only escalating to premium providers when a "Quality Gap" is detected in the data.
 
 ---
 
@@ -38,26 +42,41 @@ This project followed a rigorous software development lifecycle (SDLC) to move f
 | Component | Technology |
 | :--- | :--- |
 | **Frontend** | Streamlit |
-| **Visualization** | Plotly (Gauges), Folium (Satellite Maps) |
+| **Visuals** | Plotly (Gauges), Folium (Satellite Maps) |
 | **APIs** | OpenWeatherMap, Open-Meteo, Google Maps, Google Earth Engine |
-| **Data Processing** | Geopy, Pycountry, Googlemaps SDK |
+| **Data** | Geopy, Pycountry, Googlemaps SDK, NumPy |
 
 ---
 
-## ⚙️ Setup
+## 🧪 Testing Suite
+The project includes a comprehensive `pytest` architecture to validate environmental logic:
+* **Extreme Weather:** Tests scoring accuracy for high-heat/low-humidity scenarios.
+* **Terrain Validation:** Mocks 3D coordinate grids to verify Horn's Method slope calculations.
+* **International Logic:** Validates geocoding for diverse regions including London (GB), Sydney (AU), and Codajás (BR).
 
-1. **Clone & Install:**
+---
+
+## ⚙️ Setup & Usage
+
+1. **Install Dependencies:**
    ```bash
    pip install -r requirements.txt
+   ```
+2. **Environment Variables:**
+   Configure `OPENWEATHER_API_KEY` and `GOOGLECLOUD_API_KEY` in a `.env` file.
+3. **Run the Dashboard:**
+   ```bash
+   streamlit run app.py
+   ```
 
-![PyPI version](https://img.shields.io/pypi/v/wildfire-risk-dashboard.svg)
-[![Documentation Status](https://readthedocs.org/projects/wildfire-risk-dashboard/badge/?version=latest)](https://wildfire-risk-dashboard.readthedocs.io/en/latest/?version=latest)
+---
 
-A dynamic Python dashboard that assesses real-time wildfire risk by integrating weather APIs and satellite vegetation data.
+## 👨‍💻 Recruitment Demo Guide
+To see the dashboard's robustness in action, try these inputs:
+1. **Standard Mode:** Enter Zip `69450` and Country `BR` to see the automated fallback handle a complex international location.
+2. **Advanced Mode:** Toggle "Advanced Coordinate Mode" to input exact Latitude/Longitude for a specific forest-bordering property.
 
-* PyPI package: https://pypi.org/project/wildfire-risk-dashboard/
-* Free software: MIT License
-* Documentation: https://wildfire-risk-dashboard.readthedocs.io.
+---
 
 ## Credits
 
