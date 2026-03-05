@@ -44,13 +44,6 @@ This project followed a rigorous software development lifecycle (SDLC) to move f
 
 ---
 
-## 🧪 Global Testing Cases
-* **Paradise, CA:** Validates high-hazard logic in WUI (Wildland-Urban Interface) zones with extreme slopes.
-* **Manaus, Brazil:** Confirms the "Lush/Moisture" logic where high-density rainforest vegetation correctly returns a low risk score.
-* **Lake Louise, Canada:** Tests negative NDVI handling for water/ice bodies.
-
----
-
 ## ⚙️ Setup
 
 1. **Clone & Install:**
