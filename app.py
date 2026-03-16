@@ -138,7 +138,7 @@ if calculateButton:
                     fuelScore = wrd.normalize_fuel(ndvi) # normalizing NDVI
                 except utils.SatelliteDataError as e:
                     st.warning(f"⚠️ Fuel Risk Unavailable: {e}")
-                    fuelScore = 0
+                    fuelScore = None
 
                 # Topograpgy Processing
                 neighboringCoords = wrd.get_neighboring_coords(latitude, longitude, radius)
@@ -212,8 +212,12 @@ if st.session_state.risk_results:
         st.progress(weatherScore / 100)
 
         # Fuel Progress
-        st.write(f"🌿 Fuel: {fuelScore}%")
-        st.progress(fuelScore / 100)
+        if fuelScore == None:
+            st.write("🌿 Fuel: Currently Unavailable")
+            st.warning(f"⚠️ Fuel Risk Unavailable: {utils.SatelliteDataError}")
+        else:
+            st.write(f"🌿 Fuel: {fuelScore}%")
+            st.progress(fuelScore / 100)
 
         # Slope Progress
         st.write(f"⛰️ Slope: {slopeScore}%")

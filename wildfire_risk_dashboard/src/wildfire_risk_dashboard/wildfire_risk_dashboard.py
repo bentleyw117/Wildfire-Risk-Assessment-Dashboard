@@ -243,6 +243,9 @@ def calculate_risk_score(weatherScore, fuelScore, slopeScore):
     fuelWeight = 0.40
     slopeWeight = 0.20
     
+    if fuelScore is None:
+        fuelScore = 0
+
     total_score = (weatherWeight * weatherScore) + (fuelWeight * fuelScore) + (slopeWeight * slopeScore)
                   
     return round(total_score, 2)
